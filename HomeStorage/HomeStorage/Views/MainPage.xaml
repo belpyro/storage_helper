@@ -1,5 +1,5 @@
 ﻿<phone:PhoneApplicationPage
-    x:Class="HomeStorage.MainPage"
+    x:Class="HomeStorage.Views.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
@@ -37,59 +37,41 @@
          -->
 
          <!--Panorama control-->
-        <phone:Panorama Title="my application">
-            <phone:Panorama.Background>
+        <phone:Panorama Title="home storage">
+            <!--<phone:Panorama.Background>
                 <ImageBrush ImageSource="/HomeStorage;component/Assets/PanoramaBackground.png"/>
-            </phone:Panorama.Background>
+            </phone:Panorama.Background>-->
 
             <!--Panorama item one-->
-            <phone:PanoramaItem Header="first item">
+            <phone:PanoramaItem Header="хранилища">
                 <!--Single line list with text wrapping-->
-                <phone:LongListSelector Margin="0,0,-22,0" ItemsSource="{Binding Items}">
-                    <phone:LongListSelector.ItemTemplate>
+                <ListBox Margin="0,0,-22,0" x:Name="StorageItems">
+                    <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,-6,0,12">
-                                <TextBlock Text="{Binding LineOne}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeExtraLarge}"/>
+                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeExtraLarge}"/>
                             </StackPanel>
                         </DataTemplate>
-                    </phone:LongListSelector.ItemTemplate>
-                </phone:LongListSelector>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </phone:PanoramaItem>
 
             <!--Panorama item two-->
-            <phone:PanoramaItem>
+            <phone:PanoramaItem Header="категории">
                 <!--Double line list with image placeholder and text wrapping using a floating header that scrolls with the content-->
-                <phone:LongListSelector Margin="0,-38,-22,2" ItemsSource="{Binding Items}">
-                    <phone:LongListSelector.ListHeaderTemplate>
+                 <ListBox Margin="0,0,-22,0" x:Name="CategoryItems">
+                    <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Grid Margin="12,0,0,38">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="second item"
-                                           Style="{StaticResource PanoramaItemHeaderTextStyle}"
-                                           Grid.Row="0"/>
-                            </Grid>
-                        </DataTemplate>
-                    </phone:LongListSelector.ListHeaderTemplate>
-                    <phone:LongListSelector.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Margin="12,2,0,4" Height="105" Width="432">
-                                <!--Replace rectangle with image-->
-                                <Border BorderThickness="1" Width="99" Height="99" BorderBrush="#FFFFC700" Background="#FFFFC700"/>
-                                <StackPanel Width="311" Margin="8,-7,0,0">
-                                    <TextBlock Text="{Binding LineOne}" TextWrapping="Wrap" Margin="10,0" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeLarge}" />
-                                    <TextBlock Text="{Binding LineTwo}" TextWrapping="Wrap" Margin="10,-2,10,0" Style="{StaticResource PhoneTextSubtleStyle}" />
-                                </StackPanel>
+                            <StackPanel Margin="0,-6,0,12">
+                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeExtraLarge}"/>
                             </StackPanel>
                         </DataTemplate>
-                    </phone:LongListSelector.ItemTemplate>
-                </phone:LongListSelector>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </phone:PanoramaItem>
 
             <!--Panorama item three-->
-            <phone:PanoramaItem Header="third item" Orientation="Horizontal">
+            <phone:PanoramaItem Header="фото" Orientation="Horizontal">
                 <!--Double wide Panorama with large image placeholders-->
                 <Grid>
                     <StackPanel Margin="0,4,16,0" Orientation="Vertical" VerticalAlignment="Top">
