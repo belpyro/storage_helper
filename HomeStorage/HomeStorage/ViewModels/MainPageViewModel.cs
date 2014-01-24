@@ -64,5 +64,10 @@ namespace HomeStorage.ViewModels
                 NotifyOfPropertyChange(() => CategoryItems);
             }
         }
+
+        public void GoToStoragePage(object o)
+        {
+            
+        }
     }
 }
