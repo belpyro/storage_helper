@@ -7,11 +7,11 @@ namespace HomeStorage
 {
     public partial class App : Application
     {
-        /// <summary>
-        /// Provides easy access to the root frame of the Phone Application.
-        /// </summary>
-        /// <returns>The root frame of the Phone Application.</returns>
-        public static PhoneApplicationFrame RootFrame { get; private set; }
+        ///// <summary>
+        ///// Provides easy access to the root frame of the Phone Application.
+        ///// </summary>
+        ///// <returns>The root frame of the Phone Application.</returns>
+        //public static PhoneApplicationFrame RootFrame { get; private set; }
 
         /// <summary>
         /// Constructor for the Application object.

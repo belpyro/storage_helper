@@ -51,13 +51,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,-6,0,12">
-                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeExtraLarge}" micro:Message.Attach="[Event Click] = [Action GoToStoragePage($dataContext)] ">
-                                    <!--<i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="Click">
-                                            <micro:ActionMessage MethodName="GoToStoragePage" Parameters=""></micro:ActionMessage>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>-->
-                                </TextBlock>
+                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeExtraLarge}" micro:Message.Attach="[Event Tap] = [Action GoToStoragePage($dataContext)] "/>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

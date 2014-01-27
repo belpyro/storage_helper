@@ -31,6 +31,8 @@ namespace HomeStorage
             _container.PerRequest<MainPageViewModel>();
             _container.PerRequest<StorageViewModel>();
             _container.PerRequest<ItemViewModel>();
+            _container.PerRequest<StorageInfoViewModel>();
+            _container.PerRequest<PhotoViewModel>();
         }
     }
 }

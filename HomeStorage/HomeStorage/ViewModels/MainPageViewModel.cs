@@ -8,6 +8,9 @@ namespace HomeStorage.ViewModels
     public class MainPageViewModel : PropertyChangedBase
     {
         private ObservableCollection<Storages> _storageItems;
+
+        private INavigationService _service;
+
         //= new ObservableCollection<StorageViewModel>()
         //{
         //    new StorageViewModel(){Name = "test"},
@@ -18,8 +21,9 @@ namespace HomeStorage.ViewModels
         private StorageContext _context;
         private ObservableCollection<Categories> _categoryItems;
 
-        public MainPageViewModel()
+        public MainPageViewModel(INavigationService service)
         {
+            _service = service;
             LoadData();
         }
 
@@ -65,9 +69,9 @@ namespace HomeStorage.ViewModels
             }
         }
 
-        public void GoToStoragePage(object o)
+        public void GoToStoragePage(Storages o)
         {
-            
+           _service.UriFor<StorageInfoViewModel>().WithParam(x => x.Id, o.Id).Navigate();
         }
     }
 }
