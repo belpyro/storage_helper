@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Windows.ApplicationModel.Store;
 using Caliburn.Micro;
+using HomeStorage.Messages;
 using Microsoft.Devices;
 
 namespace HomeStorage.ViewModels
@@ -17,10 +18,12 @@ namespace HomeStorage.ViewModels
     {
         private VideoBrush _cameraBrush;
         private INavigationService _service;
+        private IEventAggregator _aggregator;
         private PhotoCamera _camera;
 
-        public PhotoViewModel(INavigationService service)
+        public PhotoViewModel(IEventAggregator aggregator, INavigationService service)
         {
+            _aggregator = aggregator;
             _service = service;
             _cameraBrush = new VideoBrush();
             this.Deactivated += PhotoViewModel_Deactivated;
@@ -64,7 +67,8 @@ namespace HomeStorage.ViewModels
             }
             finally
             {
-                e.ImageStream.Close(); 
+                e.ImageStream.Close();
+                _aggregator.Publish(new PhotoSucessfullMessage(FileName));
                 Deployment.Current.Dispatcher.BeginInvoke(() => _service.GoBack());
             }
         }

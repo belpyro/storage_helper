@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:micro="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro"
+    xmlns:bindableAppBar="clr-namespace:Caliburn.Micro.BindableAppBar;assembly=Caliburn.Micro.BindableAppBar"
     mc:Ignorable="d"
     d:DataContext="{d:DesignData SampleData/MainViewModelSampleData.xaml}"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
@@ -38,7 +39,7 @@
             CurrentUICulture of the app at run time.
          -->
 
-         <!--Panorama control-->
+        <!--Panorama control-->
         <phone:Panorama Title="home storage">
             <!--<phone:Panorama.Background>
                 <ImageBrush ImageSource="/HomeStorage;component/Assets/PanoramaBackground.png"/>
@@ -51,7 +52,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,-6,0,12">
-                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeExtraLarge}" micro:Message.Attach="[Event Tap] = [Action GoToStoragePage($dataContext)] "/>
+                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeExtraLarge}" micro:Message.Attach="[Event Hold] = [Action GetMenu($source)] "/>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -61,7 +62,7 @@
             <!--Panorama item two-->
             <phone:PanoramaItem Header="категории">
                 <!--Double line list with image placeholder and text wrapping using a floating header that scrolls with the content-->
-                 <ListBox Margin="0,0,-22,0" x:Name="CategoryItems">
+                <ListBox Margin="0,0,-22,0" x:Name="CategoryItems">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,-6,0,12">
@@ -101,6 +102,8 @@
 
             Before shipping remove this XAML and the image itself.-->
         <!--<Image Source="/Assets/AlignmentGrid.png" VerticalAlignment="Top" Height="800" Width="480" Margin="0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False" />-->
-
+        <bindableAppBar:BindableAppBar>
+            <bindableAppBar:BindableAppBarButton Text="добавить"/>
+        </bindableAppBar:BindableAppBar>
     </Grid>
 </phone:PhoneApplicationPage>

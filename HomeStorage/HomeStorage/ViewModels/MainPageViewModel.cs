@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
+using System.Windows.Navigation;
 using Caliburn.Micro;
+using Microsoft.Phone.Controls;
 
 namespace HomeStorage.ViewModels
 {
@@ -9,14 +11,7 @@ namespace HomeStorage.ViewModels
     {
         private ObservableCollection<Storages> _storageItems;
 
-        private INavigationService _service;
-
-        //= new ObservableCollection<StorageViewModel>()
-        //{
-        //    new StorageViewModel(){Name = "test"},
-        //    new StorageViewModel(){Name = "test2"},
-        //    new StorageViewModel(){Name = "test3"},
-        //};
+        private readonly INavigationService _service;
 
         private StorageContext _context;
         private ObservableCollection<Categories> _categoryItems;
@@ -24,7 +19,43 @@ namespace HomeStorage.ViewModels
         public MainPageViewModel(INavigationService service)
         {
             _service = service;
+            _service.Navigated += _service_Navigated;
             LoadData();
+        }
+
+        private void DeleteItem(object sender, RoutedEventArgs e)
+        {
+            var item = (sender as MenuItem).CommandParameter;
+
+            if (item is Storages)
+            {
+                using (var context =new StorageContext(StorageContext.ConnectionString))
+                {
+
+                    context.Storages.DeleteOnSubmit(context.Storages.First(x => x.Id == ((Storages) item).Id));
+                    context.SubmitChanges();
+                } 
+            }
+
+            LoadData();
+        }
+
+        private void EditItem(object sender, RoutedEventArgs e)
+        {
+            var item = (sender as MenuItem).CommandParameter;
+
+            if (item is Storages)
+            {
+               GoToStoragePage((Storages) item); 
+            }
+        }
+
+        void _service_Navigated(object sender, NavigationEventArgs e)
+        {
+            if (e.NavigationMode == NavigationMode.Back)
+            {
+                LoadData();
+            }
         }
 
         private void LoadData()
@@ -71,7 +102,37 @@ namespace HomeStorage.ViewModels
 
         public void GoToStoragePage(Storages o)
         {
-           _service.UriFor<StorageInfoViewModel>().WithParam(x => x.Id, o.Id).Navigate();
+            _service.UriFor<StorageInfoViewModel>().WithParam(x => x.Id, o.Id).Navigate();
+        }
+
+        public void GetMenu(FrameworkElement element)
+        {
+            var menu = ContextMenuService.GetContextMenu(element);
+
+            if (menu == null)
+            {
+                menu = new ContextMenu();
+            }
+            else
+            {
+                menu.Items.Clear();
+            }
+
+            var editLink = new MenuItem { Header = "редактировать" };
+            editLink.Click += EditItem;
+
+            var deleteLink = new MenuItem { Header = "удалить" };
+            deleteLink.Click += DeleteItem;
+
+            menu.Items.Add(editLink);
+            menu.Items.Add(deleteLink);
+
+            editLink.CommandParameter = element.DataContext;
+            deleteLink.CommandParameter = element.DataContext;
+
+            ContextMenuService.SetContextMenu(element, menu);
+
+            menu.IsOpen = true;
         }
     }
 }
