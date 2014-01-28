@@ -144,6 +144,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\default.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\storage.sdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

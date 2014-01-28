@@ -47,7 +47,7 @@
             
             <TextBlock Text="Фото" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1" Margin="4"/>
             <Image Grid.Row="1" Grid.Column="1" Margin="4" 
-                   micro:Message.Attach ="[Event Hold] = [Action SetPhoto]" MinWidth="100"  MinHeight="100" Source="{Binding Photo}"/>
+                   micro:Message.Attach ="[Event Hold] = [Action SetPhoto]" MinWidth="100"  MinHeight="100" Source="{Binding Photo}" Stretch="Fill"/>
 
         </Grid>
         

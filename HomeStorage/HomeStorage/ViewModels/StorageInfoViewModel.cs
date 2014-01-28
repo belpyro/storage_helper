@@ -20,7 +20,7 @@ namespace HomeStorage.ViewModels
 
         private INavigationService _service;
         private IEventAggregator _aggregator;
-        private Storages _storageItem;
+        private Storages _storageItem = new Storages(){Name = "хранилище", ImagePath = ""};
 
         public StorageInfoViewModel(IEventAggregator aggregator, INavigationService service)
         {
@@ -109,8 +109,13 @@ namespace HomeStorage.ViewModels
                 {
                     item.ImagePath = _storageItem.ImagePath;
                     item.Name = _storageItem.Name;
-                    context.SubmitChanges(ConflictMode.FailOnFirstConflict);
                 }
+                else
+                {
+                    context.Storages.InsertOnSubmit(_storageItem);
+                }
+                
+                context.SubmitChanges(ConflictMode.FailOnFirstConflict);
             }
         }
     }

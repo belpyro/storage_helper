@@ -40,7 +40,7 @@
          -->
 
         <!--Panorama control-->
-        <phone:Panorama Title="home storage">
+        <phone:Panorama Title="home storage" x:Name="Panorama">
             <!--<phone:Panorama.Background>
                 <ImageBrush ImageSource="/HomeStorage;component/Assets/PanoramaBackground.png"/>
             </phone:Panorama.Background>-->
@@ -103,7 +103,7 @@
             Before shipping remove this XAML and the image itself.-->
         <!--<Image Source="/Assets/AlignmentGrid.png" VerticalAlignment="Top" Height="800" Width="480" Margin="0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False" />-->
         <bindableAppBar:BindableAppBar>
-            <bindableAppBar:BindableAppBarButton Text="добавить"/>
+            <bindableAppBar:BindableAppBarButton Text="добавить" micro:Message.Attach="[Event Click] = [Action AddItem($view)]"/>
         </bindableAppBar:BindableAppBar>
     </Grid>
 </phone:PhoneApplicationPage>

@@ -1,8 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Navigation;
+using Windows.Phone.Media.Capture;
 using Caliburn.Micro;
+using HomeStorage.Views;
 using Microsoft.Phone.Controls;
 
 namespace HomeStorage.ViewModels
@@ -133,6 +137,22 @@ namespace HomeStorage.ViewModels
             ContextMenuService.SetContextMenu(element, menu);
 
             menu.IsOpen = true;
+        }
+
+        public void AddItem(MainPage view)
+        {
+            switch (view.Panorama.SelectedIndex)
+            {
+                case 0:
+                    GoToStoragePage(new Storages());
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("view");
+            }
         }
     }
 }
