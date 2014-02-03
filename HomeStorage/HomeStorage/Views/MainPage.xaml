@@ -52,7 +52,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,-6,0,12">
-                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeExtraLarge}" micro:Message.Attach="[Event Hold] = [Action GetMenu($source)] "/>
+                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeExtraLarge}" micro:Message.Attach="[Event Hold] = [Action GetMenu($source)]; [Event Tap] = [Action GoToItemsPage($dataContext)]"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

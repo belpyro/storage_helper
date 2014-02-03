@@ -109,6 +109,11 @@ namespace HomeStorage.ViewModels
             _service.UriFor<StorageInfoViewModel>().WithParam(x => x.Id, o.Id).Navigate();
         }
 
+        public void GoToItemsPage(Storages o)
+        {
+            _service.UriFor<ItemViewModel>().WithParam(x => x.StorageId, o.Id).Navigate();
+        }
+
         public void GetMenu(FrameworkElement element)
         {
             var menu = ContextMenuService.GetContextMenu(element);
