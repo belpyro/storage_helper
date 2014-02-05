@@ -1,63 +1,132 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.IO;
+using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media.Imaging;
 using Caliburn.Micro;
+using Microsoft.Phone;
 
 namespace HomeStorage.ViewModels
 {
     public class ItemViewModel : Screen
     {
-        private IEventAggregator _aggregator;
-        private INavigationService _service;
+        private Items _item = new Items();
+        private string _name;
+        private string _desription;
+        private string _category;
+        private string _storage;
+        private WriteableBitmap _image;
 
-        public ItemViewModel(IEventAggregator aggregator, INavigationService service)
+        public ItemViewModel()
         {
-            _aggregator = aggregator;
-            _service = service;
-            this.Activated += (sender, args) => LoadData();
+            this.Activated += ItemViewModel_Activated;
+            this.Deactivated += ItemViewModel_Deactivated;
         }
 
-        public int StorageId
+        #region Item info
+
+        public int Id { get; set; }
+
+        public string Name
         {
-            get { return _storageId; }
+            get { return _item.Name; }
             set
             {
-                _storageId = value;
+                _item.Name = value;
+                NotifyOfPropertyChange(() => Name);
             }
         }
 
-        private void LoadData()
+        public string Description
         {
-            if (StorageId <= 0)
+            get { return _item.Description; }
+            set
             {
-                return;
+                _item.Description = value;
+                NotifyOfPropertyChange(() => Description);
             }
+        }
 
+        public string Category
+        {
+            get
+            {
+                return _item.Categories == null ? null : _item.Categories.Name;
+            }
+            set
+            {
+                _category = value;
+                NotifyOfPropertyChange(() => Category);
+            }
+        }
+
+        public string Storage
+        {
+            get { return _item.Storages == null ? null : _item.Storages.Name; }
+            set
+            {
+                _storage = value;
+                NotifyOfPropertyChange(() => Storage);
+            }
+        }
+
+
+        public WriteableBitmap ImagePath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_item.ImagePath) && _image == null)
+                {
+                    _image = PictureDecoder.DecodeJpeg(
+                        Application.GetResourceStream(new Uri("Assets/default.jpg", UriKind.Relative)).Stream, 256, 256);
+                }
+                else
+                {
+                    using (IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                    {
+                        using (var file = myIsolatedStorage.OpenFile(_item.ImagePath, FileMode.Open))
+                        {
+                            var memStream = new MemoryStream((int)file.Length);
+                            file.CopyTo(memStream, 2000);
+                            _image.SetSource(memStream);
+                        }
+                    }
+                }
+
+                return _image;
+            }
+        }
+
+        #endregion
+
+        void ItemViewModel_Deactivated(object sender, DeactivationEventArgs e)
+        {
+            _item = null;
+
+            this.Activated -= ItemViewModel_Activated;
+            this.Deactivated -= ItemViewModel_Deactivated;
+        }
+
+        void ItemViewModel_Activated(object sender, ActivationEventArgs e)
+        {
             using (var context = new StorageContext(StorageContext.ConnectionString))
             {
-                StorageItems = new ObservableCollection<Items>(context.Items.Where(x => x.StorageId == StorageId));
+                if (Id > 0)
+                {
+                    _item = context.Items.FirstOrDefault(x => x.Id == Id);
+                }
+
+                NotifyOfPropertyChange(() => Name);
+                NotifyOfPropertyChange(() => Description);
+                NotifyOfPropertyChange(() => Category);
+                NotifyOfPropertyChange(() => Storage);
             }
         }
 
-        private ObservableCollection<Items> _storageItems;
-        private int _storageId;
 
-        public ObservableCollection<Items> StorageItems
-        {
-            get { return _storageItems; }
-            set
-            {
-                _storageItems = value;
-                NotifyOfPropertyChange(() => StorageItems);
-            }
-        }
-
-        public void AddItem()
-        {
-            _service.UriFor<ItemInfoViewModel>().WithParam(x => x.StorageId, StorageId).Navigate();
-        }
     }
 }

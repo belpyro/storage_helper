@@ -28,13 +28,8 @@ namespace HomeStorage
         {
             _container = new PhoneContainer();
             _container.RegisterPhoneServices(RootFrame);
-            _container.PerRequest<MainPageViewModel>();
-            _container.PerRequest<StorageViewModel>();
+            _container.PerRequest<ShellViewModel>();
             _container.PerRequest<ItemViewModel>();
-            _container.PerRequest<StorageInfoViewModel>();
-            _container.PerRequest<PhotoViewModel>();
-            _container.PerRequest<ItemInfoViewModel>();
-            _container.PerRequest<BaseViewModel>();
         }
     }
 }

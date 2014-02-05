@@ -10,9 +10,9 @@ using Microsoft.Phone.Shell;
 
 namespace HomeStorage.Views
 {
-    public partial class StorageInfoView : PhoneApplicationPage
+    public partial class ShellView : PhoneApplicationPage
     {
-        public StorageInfoView()
+        public ShellView()
         {
             InitializeComponent();
         }

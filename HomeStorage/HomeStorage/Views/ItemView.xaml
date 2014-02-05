@@ -6,8 +6,7 @@
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:bindableAppBar="clr-namespace:Caliburn.Micro.BindableAppBar;assembly=Caliburn.Micro.BindableAppBar"
-    xmlns:micro="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro"
+    xmlns:converters="clr-namespace:HomeStorage.Converters"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -17,33 +16,47 @@
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--TitlePanel contains the name of the application and page title-->
+        <StackPanel Grid.Row="0" Margin="12,17,0,28">
+            <TextBlock Text="MY APPLICATION" Style="{StaticResource PhoneTextNormalStyle}"/>
+            <TextBlock Text="page name" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+        </StackPanel>
+
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Margin="12,0,12,0">
-            <phone:LongListSelector ItemsSource="{Binding StorageItems}">
-                <phone:LongListSelector.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Image Source="/Assets/default.jpg" Grid.RowSpan="3"/>
-                            <TextBlock Grid.Column="1" Grid.Row="0"/>
-                            <TextBlock Grid.Row="1" Grid.Column="1"/>
-                            <TextBlock Grid.Row="2" Grid.Column="1"/>
-                        </Grid>
-                    </DataTemplate>
-                </phone:LongListSelector.ItemTemplate>
-            </phone:LongListSelector>
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <Grid.Resources>
+                <converters:ImagePathConverter x:Key="ImagePathConverter"/>
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Image Grid.ColumnSpan="2" Source="{Binding ImagePath}" Margin="4" MaxHeight="256"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Название" VerticalAlignment="Center" Margin="4"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Name}" Margin="4"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Описание" VerticalAlignment="Center" Margin="4"/>
+            <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding Description}" TextWrapping="Wrap" Margin="4"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Категория" VerticalAlignment="Center" Margin="4"/>
+            <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Category}" Margin="4"/>
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Место" VerticalAlignment="Center" Margin="4"/>
+            <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding Storage}" Margin="4"/>
         </Grid>
-        <bindableAppBar:BindableAppBar>
-            <bindableAppBar:BindableAppBarButton Text="добавить" micro:Message.Attach="[Event Click] = [Action AddItem()]"/>
-        </bindableAppBar:BindableAppBar>
     </Grid>
 
 </phone:PhoneApplicationPage>
