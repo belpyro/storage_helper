@@ -25,6 +25,8 @@ namespace HomeStorage.ViewModels
         private INavigationService _service;
         private IEnumerable<Categories> _allCategories;
         private string _categoryName;
+        private IEnumerable<Storages> _allStorages;
+        private string _storageName;
 
         public ItemViewModel(IEventAggregator aggregator, INavigationService service)
         {
@@ -80,7 +82,7 @@ namespace HomeStorage.ViewModels
                 if (value != _item.Categories)
                 {
                     _item.Categories = value;
-                    SaveData();
+                    NotifyOfPropertyChange(() => Category);
                 }
             }
         }
@@ -95,13 +97,36 @@ namespace HomeStorage.ViewModels
             }
         }
 
-        public string Storage
+        public IEnumerable<Storages> AllStorages
         {
-            get { return _item.Storages == null ? null : _item.Storages.Name; }
+            get { return _allStorages; }
             set
             {
-                _storage = value;
-                SaveData();
+                _allStorages = value;
+                NotifyOfPropertyChange(() => AllStorages);
+            }
+        }
+
+        public Storages Storage
+        {
+            get { return _item.Storages; }
+            set
+            {
+                if (_item.Storages != value)
+                {
+                    _item.Storages = value;
+                    NotifyOfPropertyChange(() => Storage);
+                }
+            }
+        }
+
+        public string StorageName
+        {
+            get { return _storageName; }
+            set
+            {
+                _storageName = value; 
+                NotifyOfPropertyChange(() => StorageName);
             }
         }
 
@@ -159,6 +184,7 @@ namespace HomeStorage.ViewModels
                 }
 
                 AllCategories = context.Categories.ToList();
+                AllStorages = context.Storages.ToList();
 
                 NotifyOfPropertyChange(null);
             }
@@ -174,6 +200,14 @@ namespace HomeStorage.ViewModels
                     context.Categories.InsertOnSubmit(category);
                     context.SubmitChanges();
                     _item.CategoryId = category.Id;
+                }
+                
+                if (_item.StorageId <= 0 && !string.IsNullOrEmpty(StorageName))
+                {
+                    var storage = new Storages() {Name = StorageName};
+                    context.Storages.InsertOnSubmit(storage);
+                    context.SubmitChanges();
+                    _item.StorageId = storage.Id;
                 }
 
                 var item = context.Items.First(x => x.Id == Id);
@@ -198,6 +232,16 @@ namespace HomeStorage.ViewModels
         {
             LoadData();
             _item.ImagePath = message.ImageName;
+            SaveData();
+        }
+
+        public void CategoryUpdate()
+        {
+            SaveData();
+        }
+
+        public void StorageUpdate()
+        {
             SaveData();
         }
     }

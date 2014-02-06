@@ -54,7 +54,7 @@
             <TextBox Grid.Column="1" Grid.Row="2" x:Name="Description" TextWrapping="Wrap" Margin="4"/>
 
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Категория" VerticalAlignment="Center" Margin="4"/>
-            <toolkit:AutoCompleteBox Grid.Column="1" Grid.Row="3" ItemsSource="{Binding AllCategories}" ValueMemberBinding="{Binding Name}" x:Name="Category" Margin="4" Text="{Binding CategoryName, Mode=TwoWay}" SelectedItem="{Binding Category, Mode=TwoWay}">
+            <toolkit:AutoCompleteBox Grid.Column="1" Grid.Row="3" ItemsSource="{Binding AllCategories}" ValueMemberBinding="{Binding Name}" x:Name="Category" Margin="4" Text="{Binding CategoryName, Mode=TwoWay}" SelectedItem="{Binding Category, Mode=TwoWay}" micro:Message.Attach="[Event LostFocus] = [Action CategoryUpdate]">
                 <toolkit:AutoCompleteBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}" Margin="4"/>
@@ -63,7 +63,13 @@
             </toolkit:AutoCompleteBox>
 
             <TextBlock Grid.Row="4" Grid.Column="0" Text="Место" VerticalAlignment="Center" Margin="4"/>
-            <TextBox Grid.Column="1" Grid.Row="4" x:Name="Storage" Margin="4"/>
+            <toolkit:AutoCompleteBox Grid.Column="1" Grid.Row="4" ItemsSource="{Binding AllStorages}" ValueMemberBinding="{Binding Name}" x:Name="Storage" Margin="4" Text="{Binding StorageName, Mode=TwoWay}" SelectedItem="{Binding Storage, Mode=TwoWay}" micro:Message.Attach="[Event LostFocus] = [Action StorageUpdate]">
+                <toolkit:AutoCompleteBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" Margin="4"/>
+                    </DataTemplate>
+                </toolkit:AutoCompleteBox.ItemTemplate>
+            </toolkit:AutoCompleteBox>
         </Grid>
     </Grid>
 
