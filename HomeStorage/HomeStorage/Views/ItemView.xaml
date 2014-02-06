@@ -7,6 +7,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="clr-namespace:HomeStorage.Converters"
+    xmlns:micro="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -43,19 +45,25 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Image Grid.ColumnSpan="2" Source="{Binding ImagePath}" Margin="4" MaxHeight="256"/>
+            <Image Grid.ColumnSpan="2" Source="{Binding ImagePath}" Margin="4" MaxHeight="256" micro:Message.Attach="[Event Tap] = [Action SetPhoto]" />
 
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Название" VerticalAlignment="Center" Margin="4"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Name}" Margin="4"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="Name" Margin="4"/>
 
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Описание" VerticalAlignment="Center" Margin="4"/>
-            <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding Description}" TextWrapping="Wrap" Margin="4"/>
+            <TextBox Grid.Column="1" Grid.Row="2" x:Name="Description" TextWrapping="Wrap" Margin="4"/>
 
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Категория" VerticalAlignment="Center" Margin="4"/>
-            <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Category}" Margin="4"/>
+            <toolkit:AutoCompleteBox Grid.Column="1" Grid.Row="3" ItemsSource="{Binding AllCategories}" ValueMemberBinding="{Binding Name}" x:Name="Category" Margin="4" Text="{Binding CategoryName, Mode=TwoWay}" SelectedItem="{Binding Category, Mode=TwoWay}">
+                <toolkit:AutoCompleteBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" Margin="4"/>
+                    </DataTemplate>
+                </toolkit:AutoCompleteBox.ItemTemplate>
+            </toolkit:AutoCompleteBox>
 
             <TextBlock Grid.Row="4" Grid.Column="0" Text="Место" VerticalAlignment="Center" Margin="4"/>
-            <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding Storage}" Margin="4"/>
+            <TextBox Grid.Column="1" Grid.Row="4" x:Name="Storage" Margin="4"/>
         </Grid>
     </Grid>
 

@@ -8,23 +8,31 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Caliburn.Micro;
+using HomeStorage.Messages;
 using Microsoft.Phone;
 
 namespace HomeStorage.ViewModels
 {
-    public class ItemViewModel : Screen
+    public class ItemViewModel : Screen, IHandle<PhotoSucessfullMessage>
     {
         private Items _item = new Items();
         private string _name;
         private string _desription;
-        private string _category;
+        private readonly string template = "pictire{0}.jpg";
+        private Categories _category;
         private string _storage;
         private WriteableBitmap _image;
+        private INavigationService _service;
+        private IEnumerable<Categories> _allCategories;
+        private string _categoryName;
 
-        public ItemViewModel()
+        public ItemViewModel(IEventAggregator aggregator, INavigationService service)
         {
             this.Activated += ItemViewModel_Activated;
             this.Deactivated += ItemViewModel_Deactivated;
+
+            _service = service;
+            aggregator.Subscribe(this);
         }
 
         #region Item info
@@ -37,7 +45,7 @@ namespace HomeStorage.ViewModels
             set
             {
                 _item.Name = value;
-                NotifyOfPropertyChange(() => Name);
+                SaveData();
             }
         }
 
@@ -47,20 +55,43 @@ namespace HomeStorage.ViewModels
             set
             {
                 _item.Description = value;
-                NotifyOfPropertyChange(() => Description);
+                SaveData();
             }
         }
 
-        public string Category
+        public IEnumerable<Categories> AllCategories
+        {
+            get { return _allCategories; }
+            set
+            {
+                _allCategories = value;
+                NotifyOfPropertyChange(() => AllCategories);
+            }
+        }
+
+        public Categories Category
         {
             get
             {
-                return _item.Categories == null ? null : _item.Categories.Name;
+                return _item.Categories;
             }
             set
             {
-                _category = value;
-                NotifyOfPropertyChange(() => Category);
+                if (value != _item.Categories)
+                {
+                    _item.Categories = value;
+                    SaveData();
+                }
+            }
+        }
+
+        public string CategoryName
+        {
+            get { return _categoryName; }
+            set
+            {
+                _categoryName = value;
+                NotifyOfPropertyChange(() => CategoryName);
             }
         }
 
@@ -70,7 +101,7 @@ namespace HomeStorage.ViewModels
             set
             {
                 _storage = value;
-                NotifyOfPropertyChange(() => Storage);
+                SaveData();
             }
         }
 
@@ -92,7 +123,9 @@ namespace HomeStorage.ViewModels
                         {
                             var memStream = new MemoryStream((int)file.Length);
                             file.CopyTo(memStream, 2000);
-                            _image.SetSource(memStream);
+
+                            memStream.Seek(0, SeekOrigin.Begin);
+                            _image = PictureDecoder.DecodeJpeg(memStream, 256, 256);
                         }
                     }
                 }
@@ -113,6 +146,11 @@ namespace HomeStorage.ViewModels
 
         void ItemViewModel_Activated(object sender, ActivationEventArgs e)
         {
+            LoadData();
+        }
+
+        private void LoadData()
+        {
             using (var context = new StorageContext(StorageContext.ConnectionString))
             {
                 if (Id > 0)
@@ -120,13 +158,47 @@ namespace HomeStorage.ViewModels
                     _item = context.Items.FirstOrDefault(x => x.Id == Id);
                 }
 
-                NotifyOfPropertyChange(() => Name);
-                NotifyOfPropertyChange(() => Description);
-                NotifyOfPropertyChange(() => Category);
-                NotifyOfPropertyChange(() => Storage);
+                AllCategories = context.Categories.ToList();
+
+                NotifyOfPropertyChange(null);
             }
         }
 
+        void SaveData()
+        {
+            using (var context = new StorageContext(StorageContext.ConnectionString))
+            {
+                if (_item.CategoryId <= 0 && !string.IsNullOrEmpty(CategoryName))
+                {
+                    var category = new Categories() {Name = CategoryName};
+                    context.Categories.InsertOnSubmit(category);
+                    context.SubmitChanges();
+                    _item.CategoryId = category.Id;
+                }
 
+                var item = context.Items.First(x => x.Id == Id);
+                item.Name = _item.Name;
+                item.ImagePath = _item.ImagePath;
+                item.Description = _item.Description;
+                item.CategoryId = _item.CategoryId;
+                item.StorageId = _item.StorageId;
+
+                context.SubmitChanges();
+                _item = item;
+                NotifyOfPropertyChange(null);
+            }
+        }
+
+        public void SetPhoto()
+        {
+            _service.UriFor<PhotoViewModel>().WithParam(x => x.FileName, string.Format(template, Id)).WithParam(x => x.Id, Id).Navigate();
+        }
+
+        public void Handle(PhotoSucessfullMessage message)
+        {
+            LoadData();
+            _item.ImagePath = message.ImageName;
+            SaveData();
+        }
     }
 }

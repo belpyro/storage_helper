@@ -22,11 +22,11 @@ namespace HomeStorage.Converters
                         Application.GetResourceStream(new Uri("Assets/default.jpg", UriKind.Relative)).Stream, 256, 256);
                 }
 
-
                 using (var file = myIsolatedStorage.OpenFile(value.ToString(), FileMode.Open))
                 {
                     memStream = new MemoryStream((int)file.Length);
                     file.CopyTo(memStream, 2000);
+                    memStream.Seek(0, SeekOrigin.Begin);
                 }  
 
                 return PictureDecoder.DecodeJpeg(memStream, 256, 256);

@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
-  <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{d55f2a3c-4cf3-409a-a280-c19af2a75f2b}" Title="HomeStorage" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="HomeStorage author" Description="Sample description" Publisher="HomeStorage" PublisherID="{bd753cd9-ad80-4620-900a-e0a273c102da}">
+  <DefaultLanguage xmlns="" code="ru-RU" />
+  <Languages xmlns="">
+    <Language code="en" />
+  </Languages>
+  <App xmlns="" ProductID="{d55f2a3c-4cf3-409a-a280-c19af2a75f2b}" Title="HomeStorage" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Belpyro" Description="Sample description" Publisher="HomeStorage" PublisherID="{bd753cd9-ad80-4620-900a-e0a273c102da}">
     <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
@@ -41,5 +44,8 @@
       <ScreenResolution Name="ID_RESOLUTION_WXGA" />
       <ScreenResolution Name="ID_RESOLUTION_HD720P" />
     </ScreenResolutions>
+    <Requirements>
+      <Requirement Name="ID_REQ_REARCAMERA" />
+    </Requirements>
   </App>
 </Deployment>

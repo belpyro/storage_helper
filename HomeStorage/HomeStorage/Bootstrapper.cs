@@ -30,6 +30,7 @@ namespace HomeStorage
             _container.RegisterPhoneServices(RootFrame);
             _container.PerRequest<ShellViewModel>();
             _container.PerRequest<ItemViewModel>();
+            _container.PerRequest<PhotoViewModel>();
         }
     }
 }
