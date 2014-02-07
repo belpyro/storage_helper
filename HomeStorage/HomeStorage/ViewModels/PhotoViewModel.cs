@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.IsolatedStorage;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Caliburn.Micro;
 using HomeStorage.Messages;
 using Microsoft.Devices;
+using Microsoft.Phone;
 
 namespace HomeStorage.ViewModels
 {
@@ -36,13 +33,11 @@ namespace HomeStorage.ViewModels
             this.Deactivated -= PhotoViewModel_Deactivated;
             CameraButtons.ShutterKeyPressed -= CameraButtons_ShutterKeyPressed;
 
-            if (_camera != null)
-            {
-                _camera.Initialized -= CameraInitialized;
-                _camera.CaptureImageAvailable -= CameraCompleted;
+            if (_camera == null) return;
+            _camera.Initialized -= CameraInitialized;
+            _camera.CaptureImageAvailable -= CameraCompleted;
 
-                _camera.Dispose();
-            }
+            _camera.Dispose();
         }
 
         void PhotoViewModel_Activated(object sender, ActivationEventArgs e)
@@ -61,6 +56,11 @@ namespace HomeStorage.ViewModels
 
         void CameraButtons_ShutterKeyPressed(object sender, EventArgs e)
         {
+            CaptureImage();
+        }
+
+        private void CaptureImage()
+        {
             if (_camera != null)
             {
                 _camera.CaptureImage();
@@ -69,25 +69,27 @@ namespace HomeStorage.ViewModels
 
         private void CameraCompleted(object sender, ContentReadyEventArgs e)
         {
-            using (var storage = IsolatedStorageFile.GetUserStoreForApplication())
-            {
-                if (storage.FileExists(FileName))
-                {
-                    storage.DeleteFile(FileName);
-                }
-
-                using (var file = storage.CreateFile(FileName))
-                {
-                    e.ImageStream.CopyTo(file);
-                    e.ImageStream.Dispose();
-                }
-            }
-
-            _aggregator.Publish(new PhotoSucessfullMessage(FileName));
             Deployment.Current.Dispatcher.BeginInvoke(() =>
-            {
-                _service.UriFor<ItemViewModel>().WithParam(x => x.Id, Id).Navigate();
-            });
+                {
+                    using (var storage = IsolatedStorageFile.GetUserStoreForApplication())
+                    {
+                        if (storage.FileExists(FileName))
+                        {
+                            storage.DeleteFile(FileName);
+                        }
+
+
+                        using (var file = storage.CreateFile(FileName))
+                        {
+                            var decodedImage = PictureDecoder.DecodeJpeg(e.ImageStream, 256, 256);
+                            decodedImage.SaveJpeg(file, 256, 256, 0, 100);
+                            e.ImageStream.Dispose();
+                        }
+                    }
+
+                    _aggregator.Publish(new PhotoSucessfullMessage(FileName));
+                    _service.UriFor<ItemViewModel>().WithParam(x => x.Id, Id).Navigate();
+                });
         }
 
         public VideoBrush CameraBackground

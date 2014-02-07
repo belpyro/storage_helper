@@ -59,6 +59,8 @@ namespace HomeStorage.ViewModels
 
                 StorageItems = new ObservableCollection<Items>(context.Items);
                 ItemCategories = new List<Categories>(context.Categories);
+
+                NotifyOfPropertyChange(null);
             }
         }
 
@@ -125,10 +127,9 @@ namespace HomeStorage.ViewModels
             }
         }
 
-
-        public void AddItem(int index)
+        public void AddItem()
         {
-
+            _service.UriFor<ItemViewModel>().Navigate();
         }
 
         public void SearchItem(int index)
@@ -151,9 +152,16 @@ namespace HomeStorage.ViewModels
             }
         }
 
-        public void RemoveItem(int index)
+        public void RemoveItem(IEnumerable<object> items)
         {
+            if (items == null || !items.Any()) return;
 
+            using (var context = new StorageContext(StorageContext.ConnectionString))
+            {
+                context.Items.DeleteAllOnSubmit(context.Items.Where(x => items.Cast<Items>().Select(m => m.Id).Contains(x.Id)));
+                context.SubmitChanges();
+                LoadData();
+            }
         }
 
         #endregion

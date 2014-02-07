@@ -25,9 +25,9 @@
         <!--Pivot Control-->
         <phone:Pivot Title="Home storage" x:Name="ShellPivot" SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}">
             <!--Pivot item one-->
-            <phone:PivotItem Header="Items">
+            <phone:PivotItem Header="Вещи">
                 <toolkit:LongListMultiSelector 
-                    Margin="4" ItemsSource="{Binding StorageItems}">
+                    Margin="4" ItemsSource="{Binding StorageItems}" x:Name="ItemsList">
                     <toolkit:LongListMultiSelector.ItemTemplate>
                         <DataTemplate>
                             <Grid micro:Message.Attach="[Event Tap] = [Action ItemSelected($dataContext)]">
@@ -52,7 +52,7 @@
             </phone:PivotItem>
 
             <!--Pivot item two-->
-            <phone:PivotItem Header="Search">
+            <phone:PivotItem Header="Поиск">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -86,11 +86,11 @@
         </phone:Pivot>
         <bindableAppBar:BindableAppBar >
             <bindableAppBar:BindableAppBar.Buttons>
-                <bindableAppBar:BindableAppBarButton Text="Add" IconUri="/Toolkit.Content/ApplicationBar.Add.png" micro:Message.Attach="[Event Click] = [Action AddItem(ShellPivot.SelectedIndex)]"/>
+                <bindableAppBar:BindableAppBarButton Text="Add" IconUri="/Toolkit.Content/ApplicationBar.Add.png" micro:Message.Attach="[Event Click] = [Action AddItem]"/>
                 <bindableAppBar:BindableAppBarButton Text="Search" IconUri="/Toolkit.Content/feature.search.png" 
                                                      micro:Message.Attach="[Event Click] = [Action SearchItem(ShellPivot.SelectedIndex)]"/>
                 <bindableAppBar:BindableAppBarButton Text="Remove" IconUri="/Toolkit.Content/ApplicationBar.Delete.png"
-                                                     micro:Message.Attach="[Event Click] = [Action RemoveItem(ShellPivot.SelectedIndex)]"/>
+                                                     micro:Message.Attach="[Event Click] = [Action RemoveItem(ItemsList.SelectedItems)]"/>
             </bindableAppBar:BindableAppBar.Buttons>
         </bindableAppBar:BindableAppBar>
     </Grid>

@@ -29,7 +29,8 @@ namespace HomeStorage.Converters
                     memStream.Seek(0, SeekOrigin.Begin);
                 }  
 
-                return PictureDecoder.DecodeJpeg(memStream, 256, 256);
+                return memStream.Length <= 0 ? PictureDecoder.DecodeJpeg(
+                    Application.GetResourceStream(new Uri("Assets/default.jpg", UriKind.Relative)).Stream, 256, 256) : PictureDecoder.DecodeJpeg(memStream, 256, 256);
             }
         }
 

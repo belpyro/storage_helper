@@ -132,9 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\default.jpg" />
-    <Content Include="Data\storage.sdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="Data\storage.sdf" />
     <Content Include="Toolkit.Content\ApplicationBar.Add.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Check.png" />

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using Caliburn.Micro;
 using HomeStorage.Messages;
 using Microsoft.Phone;
@@ -15,14 +16,15 @@ namespace HomeStorage.ViewModels
 {
     public class ItemViewModel : Screen, IHandle<PhotoSucessfullMessage>
     {
-        private Items _item = new Items();
         private string _name;
         private string _desription;
+        private string _imagePath;
         private readonly string template = "pictire{0}.jpg";
         private Categories _category;
-        private string _storage;
+        private Storages _storage;
         private WriteableBitmap _image;
         private INavigationService _service;
+        private IEventAggregator _aggregator;
         private IEnumerable<Categories> _allCategories;
         private string _categoryName;
         private IEnumerable<Storages> _allStorages;
@@ -34,7 +36,8 @@ namespace HomeStorage.ViewModels
             this.Deactivated += ItemViewModel_Deactivated;
 
             _service = service;
-            aggregator.Subscribe(this);
+            _service.Navigating += OnNavigating;
+            _aggregator = aggregator;
         }
 
         #region Item info
@@ -43,21 +46,21 @@ namespace HomeStorage.ViewModels
 
         public string Name
         {
-            get { return _item.Name; }
+            get { return _name; }
             set
             {
-                _item.Name = value;
-                SaveData();
+                _name = value;
+                NotifyOfPropertyChange(() => Name);
             }
         }
 
         public string Description
         {
-            get { return _item.Description; }
+            get { return _desription; }
             set
             {
-                _item.Description = value;
-                SaveData();
+                _desription = value;
+                NotifyOfPropertyChange(() => Description);
             }
         }
 
@@ -75,13 +78,13 @@ namespace HomeStorage.ViewModels
         {
             get
             {
-                return _item.Categories;
+                return _category;
             }
             set
             {
-                if (value != _item.Categories)
+                if (value != _category)
                 {
-                    _item.Categories = value;
+                    _category = value;
                     NotifyOfPropertyChange(() => Category);
                 }
             }
@@ -109,12 +112,12 @@ namespace HomeStorage.ViewModels
 
         public Storages Storage
         {
-            get { return _item.Storages; }
+            get { return _storage; }
             set
             {
-                if (_item.Storages != value)
+                if (_storage != value)
                 {
-                    _item.Storages = value;
+                    _storage = value;
                     NotifyOfPropertyChange(() => Storage);
                 }
             }
@@ -125,17 +128,16 @@ namespace HomeStorage.ViewModels
             get { return _storageName; }
             set
             {
-                _storageName = value; 
+                _storageName = value;
                 NotifyOfPropertyChange(() => StorageName);
             }
         }
-
 
         public WriteableBitmap ImagePath
         {
             get
             {
-                if (string.IsNullOrEmpty(_item.ImagePath) && _image == null)
+                if (string.IsNullOrEmpty(_imagePath))
                 {
                     _image = PictureDecoder.DecodeJpeg(
                         Application.GetResourceStream(new Uri("Assets/default.jpg", UriKind.Relative)).Stream, 256, 256);
@@ -144,7 +146,7 @@ namespace HomeStorage.ViewModels
                 {
                     using (IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
                     {
-                        using (var file = myIsolatedStorage.OpenFile(_item.ImagePath, FileMode.Open))
+                        using (var file = myIsolatedStorage.OpenFile(_imagePath, FileMode.Open))
                         {
                             var memStream = new MemoryStream((int)file.Length);
                             file.CopyTo(memStream, 2000);
@@ -161,65 +163,128 @@ namespace HomeStorage.ViewModels
 
         #endregion
 
+        #region Methods
+
         void ItemViewModel_Deactivated(object sender, DeactivationEventArgs e)
         {
-            _item = null;
-
             this.Activated -= ItemViewModel_Activated;
             this.Deactivated -= ItemViewModel_Deactivated;
+
+            _service.Navigating -= OnNavigating;
         }
 
         void ItemViewModel_Activated(object sender, ActivationEventArgs e)
         {
-            LoadData();
+            _aggregator.Subscribe(this);
+
+            if (Id <= 0)
+            {
+                SaveNewItem();
+                NotifyOfPropertyChange(null);
+            }
+            else
+            {
+                LoadData();
+            }
         }
 
-        private void LoadData()
+        void LoadData()
         {
             using (var context = new StorageContext(StorageContext.ConnectionString))
             {
                 if (Id > 0)
                 {
-                    _item = context.Items.FirstOrDefault(x => x.Id == Id);
+                    var item = context.Items.FirstOrDefault(x => x.Id == Id);
+                    
+                    if (item != null)
+                    {
+                        Name = item.Name;
+                        Description = item.Description;
+                        Category = item.Categories;
+                        Storage = item.Storages;
+                        _imagePath = item.ImagePath;
+                    }
                 }
 
                 AllCategories = context.Categories.ToList();
-                AllStorages = context.Storages.ToList();
-
-                NotifyOfPropertyChange(null);
+                AllStorages = context.Storages.ToList(); 
             }
+
+            NotifyOfPropertyChange(null);
         }
 
         void SaveData()
         {
             using (var context = new StorageContext(StorageContext.ConnectionString))
             {
-                if (_item.CategoryId <= 0 && !string.IsNullOrEmpty(CategoryName))
+                Categories category = null;
+                Storages storage = null;
+
+                if (Category == null && !string.IsNullOrEmpty(CategoryName))
                 {
-                    var category = new Categories() {Name = CategoryName};
+                    category = new Categories() { Name = CategoryName };
                     context.Categories.InsertOnSubmit(category);
-                    context.SubmitChanges();
-                    _item.CategoryId = category.Id;
-                }
-                
-                if (_item.StorageId <= 0 && !string.IsNullOrEmpty(StorageName))
-                {
-                    var storage = new Storages() {Name = StorageName};
-                    context.Storages.InsertOnSubmit(storage);
-                    context.SubmitChanges();
-                    _item.StorageId = storage.Id;
                 }
 
-                var item = context.Items.First(x => x.Id == Id);
-                item.Name = _item.Name;
-                item.ImagePath = _item.ImagePath;
-                item.Description = _item.Description;
-                item.CategoryId = _item.CategoryId;
-                item.StorageId = _item.StorageId;
+                if (Storage == null && !string.IsNullOrEmpty(StorageName))
+                {
+                    storage = new Storages() { Name = StorageName };
+                    context.Storages.InsertOnSubmit(storage);
+                }
+
+                if (category != null || storage != null)
+                {
+                    context.SubmitChanges();
+
+                    if (category != null)
+                    {
+                        Category = category;
+                    }
+                    if (storage != null)
+                    {
+                        Storage = storage;
+                    }
+                }
+
+                var item = context.Items.FirstOrDefault(x => x.Id == Id);
+                if (item != null)
+                {
+                    item.Name = Name;
+                    item.ImagePath = _imagePath;
+                    item.Description = Description;
+                    item.CategoryId = Category.Id;
+                    item.StorageId = Storage.Id;
+                }
 
                 context.SubmitChanges();
-                _item = item;
-                NotifyOfPropertyChange(null);
+            }
+        }
+
+        void SaveImageData()
+        {
+            using (var context = new StorageContext(StorageContext.ConnectionString))
+            {
+                var item = context.Items.First(x => x.Id == Id);
+                item.ImagePath = _imagePath;
+                context.SubmitChanges(); 
+            }
+
+            NotifyOfPropertyChange(() => ImagePath);
+        }
+
+        void SaveNewItem()
+        {
+            using (var context = new StorageContext(StorageContext.ConnectionString))
+            {
+                var item = new Items { Name = "-пусто-", StorageId = 1, CategoryId = 1, ImagePath = "default.jpg" };
+                context.Items.InsertOnSubmit(item);
+                context.SubmitChanges();
+                Id = item.Id;
+                Name = item.Name;
+                Description = item.Description;
+                _imagePath = item.ImagePath;
+                Category = item.Categories;
+                Storage = item.Storages;
             }
         }
 
@@ -230,19 +295,19 @@ namespace HomeStorage.ViewModels
 
         public void Handle(PhotoSucessfullMessage message)
         {
+            _imagePath = message.ImageName;
+            SaveImageData();
             LoadData();
-            _item.ImagePath = message.ImageName;
-            SaveData();
         }
 
-        public void CategoryUpdate()
+        private void OnNavigating(object sender, NavigatingCancelEventArgs e)
         {
-            SaveData();
+            if (e.NavigationMode == NavigationMode.Back)
+            {
+                SaveData();
+            }
         }
 
-        public void StorageUpdate()
-        {
-            SaveData();
-        }
+        #endregion
     }
 }

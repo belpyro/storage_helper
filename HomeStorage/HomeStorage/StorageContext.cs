@@ -446,7 +446,7 @@ public class DebugWriter : TextWriter
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="categoryId", Storage="_CategoryId", DbType="Int NOT NULL")]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="categoryId", Storage="_CategoryId", DbType="Int NOT NULL DEFAULT(1)")]
 		public int CategoryId
 		{
 			get
@@ -466,7 +466,7 @@ public class DebugWriter : TextWriter
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="storageId", Storage="_StorageId", DbType="Int NOT NULL")]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="storageId", Storage="_StorageId", DbType="Int NOT NULL DEFAULT(1)")]
 		public int StorageId
 		{
 			get
