@@ -16,7 +16,7 @@ namespace HomeStorage.Converters
             {
                 MemoryStream memStream;
 
-                if (value == null || string.IsNullOrEmpty(value.ToString()))
+                if (value == null || string.IsNullOrEmpty(value.ToString()) || !myIsolatedStorage.FileExists(value.ToString()))
                 {
                     return PictureDecoder.DecodeJpeg(
                         Application.GetResourceStream(new Uri("Assets/default.jpg", UriKind.Relative)).Stream, 256, 256);

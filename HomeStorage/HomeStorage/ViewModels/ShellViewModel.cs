@@ -18,7 +18,9 @@ namespace HomeStorage.ViewModels
         private Categories _itemCategory;
         private string _itemName;
         private int _selectedIndex;
-        private INavigationService _service;
+        private readonly INavigationService _service;
+        private List<Storages> _itemStorages;
+        private Storages _itemStorage;
 
         #region Items
 
@@ -50,15 +52,18 @@ namespace HomeStorage.ViewModels
             LoadData();
         }
 
-        private void LoadData()
+        public void LoadData()
         {
             //try load data
             using (var context = new StorageContext(StorageContext.ConnectionString))
             {
                 context.CreateIfNotExists();
 
-                StorageItems = new ObservableCollection<Items>(context.Items);
-                ItemCategories = new List<Categories>(context.Categories);
+                StorageItems = new ObservableCollection<Items>(context.Items.OrderBy(x => x.Name).ToList());
+                ItemCategories = new List<Categories>(context.Categories.ToList());
+                ItemStorages = new List<Storages>(context.Storages.ToList());
+
+                DisplayName = string.Format("Вещи ({0})", StorageItems.Count);
 
                 NotifyOfPropertyChange(null);
             }
@@ -134,19 +139,39 @@ namespace HomeStorage.ViewModels
 
         public void SearchItem(int index)
         {
-            if (string.IsNullOrEmpty(ItemName) && ItemCategory == null)
+            if (string.IsNullOrEmpty(ItemName) && ItemCategory == null && ItemStorage == null)
             {
                 SelectedIndex = 1;
+                LoadData();
                 return;
             }
 
             using (var context = new StorageContext(StorageContext.ConnectionString))
             {
-                //TODO change algoritm
-                StorageItems = ItemCategory != null ? new ObservableCollection<Items>(context.Items.Where(x => x.Categories.Id == ItemCategory.Id)) : new ObservableCollection<Items>(context.Items.Where(x => x.Name.Contains(ItemName)));
+                if (!string.IsNullOrEmpty(ItemName))
+                {
+                    StorageItems = new ObservableCollection<Items>(context.Items.Where(x => x.Name.Contains(ItemName)).ToList());
+                }
+
+                if (ItemCategory != null)
+                {
+                    StorageItems = StorageItems != null
+                        ? new ObservableCollection<Items>(StorageItems.Where(x => x.CategoryId == ItemCategory.Id))
+                        : new ObservableCollection<Items>(
+                            context.Items.Where(x => x.CategoryId == ItemCategory.Id).ToList());
+                }
+
+                if (ItemStorage != null)
+                {
+                   StorageItems = StorageItems != null
+                        ? new ObservableCollection<Items>(StorageItems.Where(x => x.StorageId == ItemStorage.Id))
+                        : new ObservableCollection<Items>(
+                            context.Items.Where(x => x.StorageId == ItemStorage.Id).ToList()); 
+                }
 
                 ItemName = null;
                 ItemCategory = null;
+                ItemStorage = null;
 
                 SelectedIndex = 0;
             }
@@ -195,6 +220,27 @@ namespace HomeStorage.ViewModels
             {
                 _itemCategory = value;
                 NotifyOfPropertyChange(() => ItemCategory);
+            }
+        }
+
+
+        public List<Storages> ItemStorages
+        {
+            get { return _itemStorages; }
+            set
+            {
+                _itemStorages = value; 
+                NotifyOfPropertyChange(() => ItemStorages);
+            }
+        }
+
+        public Storages ItemStorage
+        {
+            get { return _itemStorage; }
+            set
+            {
+                _itemStorage = value; 
+                NotifyOfPropertyChange(() => ItemStorage);
             }
         }
 

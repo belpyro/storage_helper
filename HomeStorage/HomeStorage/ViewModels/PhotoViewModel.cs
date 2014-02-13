@@ -3,6 +3,7 @@ using System.IO.IsolatedStorage;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using Caliburn.Micro;
 using HomeStorage.Messages;
 using Microsoft.Devices;

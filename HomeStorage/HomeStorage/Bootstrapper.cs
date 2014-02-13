@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 using Caliburn.Micro;
 using HomeStorage.ViewModels;
 
@@ -31,6 +32,11 @@ namespace HomeStorage
             _container.PerRequest<ShellViewModel>();
             _container.PerRequest<ItemViewModel>();
             _container.PerRequest<PhotoViewModel>();
+        }
+
+        protected override void OnUnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
+        {
+            base.OnUnhandledException(sender, e);
         }
     }
 }
